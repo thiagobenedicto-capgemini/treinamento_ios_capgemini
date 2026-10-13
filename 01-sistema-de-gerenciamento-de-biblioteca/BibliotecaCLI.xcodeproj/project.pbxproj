@@ -1,0 +1,197 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		14AD88E94C1003226B0410E6 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Documento.swift;
+			sourceTree = "<group>";
+		};
+		142784C834FD3D526C157CCE = {
+			isa = PBXBuildFile;
+			fileRef = 14AD88E94C1003226B0410E6;
+		};
+		13CA60D947097087260DF00C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Livro.swift;
+			sourceTree = "<group>";
+		};
+		5375D6D3547428A575006F07 = {
+			isa = PBXBuildFile;
+			fileRef = 13CA60D947097087260DF00C;
+		};
+		AE8766CF0A90743A3F420F8E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = main.swift;
+			sourceTree = "<group>";
+		};
+		A4F9ED9D5106A4B5FB6971B4 = {
+			isa = PBXBuildFile;
+			fileRef = AE8766CF0A90743A3F420F8E;
+		};
+		A8792157CB4F27FB949C035F = {
+			isa = PBXFileReference;
+			explicitFileType = "compiled.mach-o.executable";
+			includeInIndex = 0;
+			path = BibliotecaCLI;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		711A6108BA2CE6CA93DD47D6 = {
+			isa = PBXFileReference;
+			lastKnownFileType = net.daringfireball.markdown;
+			path = README.md;
+			sourceTree = "<group>";
+		};
+		F7EBC87E12F52DB20EE60E65 = {
+			isa = PBXGroup;
+			children = (
+				14AD88E94C1003226B0410E6,
+				13CA60D947097087260DF00C,
+				AE8766CF0A90743A3F420F8E,
+			);
+			path = BibliotecaCLI;
+			sourceTree = "<group>";
+		};
+		0A3E27B8CA818264D75C8D81 = {
+			isa = PBXGroup;
+			children = (
+				A8792157CB4F27FB949C035F,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EC6AE75C017423A0C5A951A8 = {
+			isa = PBXGroup;
+			children = (
+				F7EBC87E12F52DB20EE60E65,
+				711A6108BA2CE6CA93DD47D6,
+				0A3E27B8CA818264D75C8D81,
+			);
+			sourceTree = "<group>";
+		};
+		878A52FC5FF6A57D50B7B870 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				142784C834FD3D526C157CCE,
+				5375D6D3547428A575006F07,
+				A4F9ED9D5106A4B5FB6971B4,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2AA269EB967A8853A258BFA = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF6742D896FDCF1DF8B0399E = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SDKROOT = macosx;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+			};
+			name = Debug;
+		};
+		36D0AD3C0A8054D260098206 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				SUPPORTED_PLATFORMS = macosx;
+				CODE_SIGNING_ALLOWED = NO;
+			};
+			name = Debug;
+		};
+		5C31758DDED491FD70B9061E = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				SDKROOT = macosx;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		E094E39F0366821F161245A2 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				SUPPORTED_PLATFORMS = macosx;
+				CODE_SIGNING_ALLOWED = NO;
+			};
+			name = Release;
+		};
+		DF833A3E44B2D81665609F6A = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AF6742D896FDCF1DF8B0399E,
+				5C31758DDED491FD70B9061E,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5E1C734F683BB1E0455121E0 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				36D0AD3C0A8054D260098206,
+				E094E39F0366821F161245A2,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		34A04005BCAF206EEC990BD9 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E1C734F683BB1E0455121E0;
+			buildPhases = (
+				878A52FC5FF6A57D50B7B870,
+				E2AA269EB967A8853A258BFA,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BibliotecaCLI;
+			productName = BibliotecaCLI;
+			productReference = A8792157CB4F27FB949C035F;
+			productType = "com.apple.product-type.tool";
+		};
+		244210E48437B6556980A702 = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1500;
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = DF833A3E44B2D81665609F6A;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EC6AE75C017423A0C5A951A8;
+			productRefGroup = 0A3E27B8CA818264D75C8D81;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				34A04005BCAF206EEC990BD9,
+			);
+		};
+	};
+	rootObject = 244210E48437B6556980A702;
+}
