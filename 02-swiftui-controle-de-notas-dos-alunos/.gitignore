@@ -1,10 +1,21 @@
-# Arquivos do macOS
+# Xcode e Swift
 .DS_Store
-
-# Resultados de compilação
-build/
+.build/
 DerivedData/
-
-# Configurações pessoais do Xcode
-xcuserdata/
+build/
 *.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+*.hmap
+*.ipa
+*.dSYM/
+*.dSYM.zip
+*.swiftdoc
+*.swiftmodule
+*.swiftsourceinfo
+*.playground
+*.xcworkspace/xcuserdata/
+**/xcuserdata/
+**/.swiftpm/xcode/package.xcworkspace/xcuserdata/
+.swiftpm/
+.netrc

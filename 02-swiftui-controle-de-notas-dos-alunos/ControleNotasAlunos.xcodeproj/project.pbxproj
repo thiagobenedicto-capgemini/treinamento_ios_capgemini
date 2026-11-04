@@ -1,0 +1,249 @@
+// !$*UTF8*$!
+{
+    archiveVersion = 1;
+    classes = {
+    };
+    objectVersion = 56;
+    objects = {
+
+/* Begin PBXBuildFile section */
+        E567F33684B344421F130E14 /* ControleNotasAlunosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53CB17B1C942A113CAEFD018 /* ControleNotasAlunosApp.swift */; };
+        BBB1FDF76298CE0443BA21C2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A549A3A8C4CAFC403862D4A8 /* ContentView.swift */; };
+        026446AD22985F0BDDCC1931 /* Aluno.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375324A70F238B870E32B322 /* Aluno.swift */; };
+        D02F577B2DAEAD614A51E54C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F969292589B1A60462DF3BE0 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+        53CB17B1C942A113CAEFD018 /* ControleNotasAlunosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControleNotasAlunosApp.swift; sourceTree = "<group>"; };
+        A549A3A8C4CAFC403862D4A8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+        375324A70F238B870E32B322 /* Aluno.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aluno.swift; sourceTree = "<group>"; };
+        F969292589B1A60462DF3BE0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+        6633A0AF04A557CCB3C12F06 /* ControleNotasAlunos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ControleNotasAlunos.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+        C5E9BE456ACA006C32FA6D97 /* Frameworks */ = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+        B160AD05B258FFC181BBB9D5 = {
+            isa = PBXGroup;
+            children = (
+                D520BAC52BF7D9B76C4130B9 /* ControleNotasAlunos */,
+                E6FB13C63768B9660545BA60 /* Products */,
+            );
+            sourceTree = "<group>";
+        };
+        D520BAC52BF7D9B76C4130B9 /* ControleNotasAlunos */ = {
+            isa = PBXGroup;
+            children = (
+                53CB17B1C942A113CAEFD018 /* ControleNotasAlunosApp.swift */,
+                A549A3A8C4CAFC403862D4A8 /* ContentView.swift */,
+                375324A70F238B870E32B322 /* Aluno.swift */,
+                F969292589B1A60462DF3BE0 /* Assets.xcassets */,
+            );
+            path = ControleNotasAlunos;
+            sourceTree = "<group>";
+        };
+        E6FB13C63768B9660545BA60 /* Products */ = {
+            isa = PBXGroup;
+            children = (
+                6633A0AF04A557CCB3C12F06 /* ControleNotasAlunos.app */,
+            );
+            name = Products;
+            sourceTree = "<group>";
+        };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+        D99EAD49169EEE98A90DB363 /* ControleNotasAlunos */ = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = E58A272E4397DAC4716F9A1D /* Build configuration list for PBXNativeTarget "ControleNotasAlunos" */;
+            buildPhases = (
+                DE8DBEE2AF4790BAAA8A1F63 /* Sources */,
+                C5E9BE456ACA006C32FA6D97 /* Frameworks */,
+                EFB321A32D8E6BBD4C9FEAEF /* Resources */,
+            );
+            buildRules = (
+            );
+            dependencies = (
+            );
+            name = ControleNotasAlunos;
+            productName = ControleNotasAlunos;
+            productReference = 6633A0AF04A557CCB3C12F06 /* ControleNotasAlunos.app */;
+            productType = "com.apple.product-type.application";
+        };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+        A1951EBF7B50D92973D9F04D /* Project object */ = {
+            isa = PBXProject;
+            attributes = {
+                BuildIndependentTargetsInParallel = 1;
+                LastUpgradeCheck = 2600;
+                TargetAttributes = {
+                    D99EAD49169EEE98A90DB363 = {
+                        CreatedOnToolsVersion = 26.0;
+                    };
+                };
+            };
+            buildConfigurationList = B4C80853E5A5D946D194C8B2 /* Build configuration list for PBXProject "ControleNotasAlunos" */;
+            compatibilityVersion = "Xcode 14.0";
+            developmentRegion = "pt-BR";
+            hasScannedForEncodings = 0;
+            knownRegions = (
+                "pt-BR",
+                en,
+                Base,
+            );
+            mainGroup = B160AD05B258FFC181BBB9D5;
+            productRefGroup = E6FB13C63768B9660545BA60 /* Products */;
+            projectDirPath = "";
+            projectRoot = "";
+            targets = (
+                D99EAD49169EEE98A90DB363 /* ControleNotasAlunos */,
+            );
+        };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+        EFB321A32D8E6BBD4C9FEAEF /* Resources */ = {
+            isa = PBXResourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                D02F577B2DAEAD614A51E54C /* Assets.xcassets in Resources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+        DE8DBEE2AF4790BAAA8A1F63 /* Sources */ = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = (
+                E567F33684B344421F130E14 /* ControleNotasAlunosApp.swift in Sources */,
+                BBB1FDF76298CE0443BA21C2 /* ContentView.swift in Sources */,
+                026446AD22985F0BDDCC1931 /* Aluno.swift in Sources */,
+            );
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+        1EBCA13EDD0E1CFAB02B7430 /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ENABLE_MODULES = YES;
+                CODE_SIGN_STYLE = Automatic;
+                DEBUG_INFORMATION_FORMAT = dwarf;
+                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                ENABLE_USER_SCRIPT_SANDBOXING = YES;
+                GCC_C_LANGUAGE_STANDARD = gnu17;
+                GCC_OPTIMIZATION_LEVEL = 0;
+                IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+                MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+                ONLY_ACTIVE_ARCH = YES;
+                SDKROOT = iphoneos;
+                SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+                SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+            };
+            name = Debug;
+        };
+        4A78133FF547321AD7273D7E /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ENABLE_MODULES = YES;
+                CODE_SIGN_STYLE = Automatic;
+                COPY_PHASE_STRIP = NO;
+                DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+                ENABLE_NS_ASSERTIONS = NO;
+                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                ENABLE_USER_SCRIPT_SANDBOXING = YES;
+                GCC_C_LANGUAGE_STANDARD = gnu17;
+                IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+                MTL_ENABLE_DEBUG_INFO = NO;
+                SDKROOT = iphoneos;
+                SWIFT_COMPILATION_MODE = wholemodule;
+                SWIFT_OPTIMIZATION_LEVEL = "-O";
+                VALIDATE_PRODUCT = YES;
+            };
+            name = Release;
+        };
+        F2DB9983B5E770178C47BCEB /* Debug */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                GENERATE_INFOPLIST_FILE = YES;
+                INFOPLIST_KEY_CFBundleDisplayName = "Controle de Notas";
+                INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+                INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+                INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+                IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = br.com.cursoios.ControleNotasAlunos;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Debug;
+        };
+        0CDFE53ADFE5FEB3E665B851 /* Release */ = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                GENERATE_INFOPLIST_FILE = YES;
+                INFOPLIST_KEY_CFBundleDisplayName = "Controle de Notas";
+                INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+                INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+                INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+                IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+                MARKETING_VERSION = 1.0;
+                PRODUCT_BUNDLE_IDENTIFIER = br.com.cursoios.ControleNotasAlunos;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SWIFT_EMIT_LOC_STRINGS = YES;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = 1;
+            };
+            name = Release;
+        };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+        B4C80853E5A5D946D194C8B2 /* Build configuration list for PBXProject "ControleNotasAlunos" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                1EBCA13EDD0E1CFAB02B7430 /* Debug */,
+                4A78133FF547321AD7273D7E /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        E58A272E4397DAC4716F9A1D /* Build configuration list for PBXNativeTarget "ControleNotasAlunos" */ = {
+            isa = XCConfigurationList;
+            buildConfigurations = (
+                F2DB9983B5E770178C47BCEB /* Debug */,
+                0CDFE53ADFE5FEB3E665B851 /* Release */,
+            );
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+/* End XCConfigurationList section */
+    };
+    rootObject = A1951EBF7B50D92973D9F04D /* Project object */;
+}
