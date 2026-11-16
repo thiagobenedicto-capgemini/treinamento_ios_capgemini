@@ -1,7 +1,5 @@
 # Controle de Notas dos Alunos
 
-Aplicativo acadêmico para iPhone desenvolvido em **Swift e SwiftUI** como projeto final de um módulo introdutório de desenvolvimento iOS.
-
 ## Funcionalidades
 
 - Cadastro de alunos com nome e duas notas entre **0 e 10**.
