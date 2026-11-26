@@ -16,20 +16,19 @@ struct AddPostView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section("Título") {
+                    TextField("Dê um título ao seu post", text: $title, axis: .vertical)
+                        .font(.title3.weight(.semibold))
+                        .lineLimit(1...4)
+                }
                 Section {
-                    Label("Escreva sua publicação", systemImage: "square.and.pencil")
-                        .font(.headline)
-                        .foregroundStyle(Color.indigo)
-                    Text("O post será salvo somente neste dispositivo.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                Section("Título · obrigatório") {
-                    TextField("Digite o título", text: $title)
-                }
-                Section("Conteúdo · obrigatório") {
-                    TextField("Escreva o conteúdo do post", text: $bodyText, axis: .vertical)
-                        .lineLimit(5...10)
+                    TextField("Comece a escrever…", text: $bodyText, axis: .vertical)
+                        .font(.body)
+                        .lineLimit(8...16)
+                } header: {
+                    Text("Conteúdo")
+                } footer: {
+                    Text("\(bodyText.count) caracteres")
                 }
                 if let errorMessage {
                     Section {
@@ -38,23 +37,17 @@ struct AddPostView: View {
                     }
                 }
                 Section {
-                    Button {
-                        if viewModel.addPost(title: title, body: bodyText) {
-                            onSaved()
-                            dismiss()
-                        } else {
-                            errorMessage = viewModel.storageErrorMessage
-                        }
-                    } label: {
-                        Label("Salvar post", systemImage: "checkmark.circle.fill")
+                    Button(action: save) {
+                        Label("Salvar post", systemImage: "checkmark")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     .disabled(!canSave)
                     .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                 } footer: {
-                    Text("Preencha os dois campos para habilitar o botão Salvar post.")
+                    Label("Sua publicação fica salva somente neste dispositivo.", systemImage: "lock")
                 }
             }
             .navigationTitle("Novo post")
@@ -63,8 +56,22 @@ struct AddPostView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancelar") { dismiss() }
                 }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Salvar", action: save)
+                        .fontWeight(.semibold)
+                        .disabled(!canSave)
+                }
             }
         }
-        .tint(.indigo)
+        .tint(.blue)
+    }
+
+    private func save() {
+        if viewModel.addPost(title: title, body: bodyText) {
+            onSaved()
+            dismiss()
+        } else {
+            errorMessage = viewModel.storageErrorMessage
+        }
     }
 }

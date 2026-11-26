@@ -1,42 +1,60 @@
 import SwiftUI
 
+// Filtros da lista local, sem alterar os dados gravados.
+enum SavedFilter: String, CaseIterable {
+    case all = "Todos"
+    case created = "Criados"
+    case favorites = "Favoritos"
+}
+
 struct SavedView: View {
     @ObservedObject var viewModel: PostsViewModel
     @Binding var showingAddPost: Bool
+    @Binding var filter: SavedFilter
+    @Binding var searchText: String
     @State private var postToDelete: SavedPost?
     @State private var showingDelete = false
 
-    private var createdCount: Int {
-        viewModel.savedPosts.filter { $0.apiID == nil }.count
+    private var filteredPosts: [SavedPost] {
+        var posts = viewModel.savedPosts
+        if filter == .created {
+            posts = posts.filter { $0.apiID == nil }
+        } else if filter == .favorites {
+            posts = posts.filter { $0.apiID != nil }
+        }
+        if !searchText.isEmpty {
+            posts = posts.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText) ||
+                $0.body.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        return Array(posts.reversed())
     }
 
     var body: some View {
         NavigationStack {
             List {
                 Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("ARMAZENAMENTO LOCAL", systemImage: "doc.text")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.indigo)
-                        Text("Sua coleção")
-                            .font(.title2.bold())
-                        HStack(spacing: 12) {
-                            counter("Criados", count: createdCount, icon: "square.and.pencil")
-                            counter("Favoritos", count: viewModel.savedPosts.count - createdCount, icon: "bookmark.fill")
+                    Picker("Tipo de publicação", selection: $filter) {
+                        ForEach(SavedFilter.allCases, id: \.self) { option in
+                            Text(option.rawValue).tag(option)
                         }
+                    }
+                    .pickerStyle(.segmented)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                }
+
+                if searchText.isEmpty {
+                    Section {
                         Button {
                             showingAddPost = true
                         } label: {
-                            Label("Cadastrar novo post", systemImage: "plus.circle.fill")
-                                .frame(maxWidth: .infinity)
+                            Label("Cadastrar novo post", systemImage: "square.and.pencil")
+                                .font(.body.weight(.semibold))
+                                .padding(.vertical, 4)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                        Label("Dados mantidos em um arquivo JSON no dispositivo.", systemImage: "internaldrive")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
                     }
-                    .padding(.vertical, 8)
                 }
 
                 if let error = viewModel.storageErrorMessage {
@@ -47,42 +65,46 @@ struct SavedView: View {
                     }
                 }
 
-                Section("Meus posts · \(viewModel.savedPosts.count)") {
-                    if viewModel.savedPosts.isEmpty {
+                Section {
+                    if filteredPosts.isEmpty {
                         VStack(spacing: 10) {
-                            Image(systemName: "bookmark.square")
-                                .font(.system(size: 42))
-                                .foregroundStyle(Color.indigo)
-                            Text("Nenhum post salvo").font(.headline)
-                            Text("Cadastre um novo post ou salve uma publicação na aba Explorar.")
+                            Image(systemName: "bookmark")
+                                .font(.system(size: 38))
+                                .foregroundStyle(.secondary)
+                            Text(viewModel.savedPosts.isEmpty ? "Nenhum post salvo" : "Nenhum resultado")
+                                .font(.headline)
+                            Text(viewModel.savedPosts.isEmpty
+                                 ? "Salve publicações da aba Explorar ou crie seu primeiro post."
+                                 : "Tente outro filtro ou termo de busca.")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
                         }
+                        .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 24)
                     }
-                    ForEach(viewModel.savedPosts) { post in
+
+                    ForEach(filteredPosts) { post in
                         VStack(alignment: .leading, spacing: 10) {
-                            Label(post.apiID == nil ? "Criado por mim" : "Favorito da API",
-                                  systemImage: post.apiID == nil ? "square.and.pencil" : "bookmark.fill")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(Color.indigo)
-                            Text(post.title).font(.headline)
-                            Text(post.body)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
+                            NavigationLink {
+                                PostDetailView(viewModel: viewModel, savedPost: post)
+                            } label: {
+                                PostRowView(title: post.title, bodyText: post.body,
+                                            source: post.apiID == nil ? "Criado por mim" : "Favorito da API",
+                                            symbol: post.apiID == nil ? "doc.text.fill" : "bookmark.fill")
+                            }
+
                             Button(role: .destructive) {
                                 requestDelete(post)
                             } label: {
                                 Label("Excluir post", systemImage: "trash")
-                                    .frame(maxWidth: .infinity)
+                                    .font(.subheadline.weight(.medium))
+                                    .padding(.vertical, 5)
                             }
-                            .buttonStyle(.bordered)
-                            .tint(.red)
+                            .buttonStyle(.borderless)
+                            .foregroundStyle(Color.red)
                         }
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 5)
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button {
                                 requestDelete(post)
@@ -92,22 +114,33 @@ struct SavedView: View {
                             .tint(.red)
                         }
                     }
+                } header: {
+                    HStack {
+                        Text(filter.rawValue)
+                        Spacer()
+                        Text("\(filteredPosts.count)")
+                            .monospacedDigit()
+                    }
+                } footer: {
+                    Label("Salvos neste dispositivo · disponíveis offline", systemImage: "internaldrive")
                 }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Meus posts")
+            .navigationBarTitleDisplayMode(.large)
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always),
+                        prompt: "Buscar meus posts")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showingAddPost = true
                     } label: {
-                        Label("Novo post", systemImage: "plus")
+                        Label("Cadastrar novo post", systemImage: "square.and.pencil")
                     }
                 }
             }
             .alert("Excluir post?", isPresented: $showingDelete, presenting: postToDelete) { post in
                 Button("Excluir", role: .destructive) {
-                    // Em caso de falha, a mensagem aparece na seção de armazenamento.
                     viewModel.deletePost(post)
                     postToDelete = nil
                 }
@@ -121,19 +154,5 @@ struct SavedView: View {
     private func requestDelete(_ post: SavedPost) {
         postToDelete = post
         showingDelete = true
-    }
-
-    private func counter(_ title: String, count: Int, icon: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Label(title, systemImage: icon)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text("\(count)")
-                .font(.title.bold())
-                .foregroundStyle(Color.indigo)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(Color.indigo.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 }

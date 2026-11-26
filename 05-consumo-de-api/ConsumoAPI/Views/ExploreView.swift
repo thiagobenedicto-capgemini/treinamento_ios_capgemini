@@ -17,46 +17,32 @@ struct ExploreView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Label("JSONPlaceholder · API REST", systemImage: "network")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.indigo)
-                        Text("Descubra novos posts")
-                            .font(.title2.bold())
-                        Text("Explore publicações da internet, salve suas favoritas ou escreva a sua própria.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        HStack(spacing: 8) {
-                            Label("\(viewModel.apiPosts.count) da API", systemImage: "globe")
-                            Spacer()
-                            Label("\(viewModel.savedPosts.count) salvos", systemImage: "bookmark.fill")
-                        }
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(Color.indigo)
-                        .padding(.vertical, 4)
+                if searchText.isEmpty {
+                    Section {
                         Button {
                             showingAddPost = true
                         } label: {
-                            Label("Cadastrar novo post", systemImage: "plus.circle.fill")
-                                .frame(maxWidth: .infinity)
+                            Label("Cadastrar novo post", systemImage: "square.and.pencil")
+                                .font(.body.weight(.semibold))
+                                .padding(.vertical, 4)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
+                    } footer: {
+                        Text("Crie suas próprias publicações ou salve as que encontrar.")
                     }
-                    .padding(.vertical, 8)
                 }
 
-                Section("Publicações da API") {
+                Section {
                     if viewModel.isLoading && viewModel.apiPosts.isEmpty {
-                        ProgressView("Carregando posts…")
+                        ProgressView("Carregando publicações…")
                             .frame(maxWidth: .infinity)
-                            .padding()
+                            .padding(.vertical, 24)
                     } else if let error = viewModel.apiErrorMessage {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Label("Conexão indisponível", systemImage: "wifi.exclamationmark")
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label("Conexão indisponível", systemImage: "wifi.slash")
                                 .font(.headline)
-                            Text(error).font(.subheadline).foregroundStyle(.secondary)
+                            Text(error)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                             Button("Tentar novamente") {
                                 Task { await viewModel.fetchPosts() }
                             }
@@ -64,45 +50,76 @@ struct ExploreView: View {
                         }
                         .padding(.vertical, 8)
                     } else if filteredPosts.isEmpty {
-                        Label("Nenhum post encontrado", systemImage: "magnifyingglass")
-                            .foregroundStyle(.secondary)
+                        VStack(spacing: 10) {
+                            Image(systemName: "magnifyingglass")
+                                .font(.largeTitle)
+                                .foregroundStyle(.secondary)
+                            Text("Nenhum post encontrado").font(.headline)
+                            Text("Experimente outro termo de busca.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
                     }
 
                     ForEach(filteredPosts) { post in
                         VStack(alignment: .leading, spacing: 10) {
-                            Label("Post #\(post.id)  ·  Usuário \(post.userId)", systemImage: "person.crop.circle")
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.secondary)
-                            Text(post.title).font(.headline)
-                            Text(post.body)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Button {
-                                if !viewModel.savePost(post) { showingError = true }
+                            NavigationLink {
+                                PostDetailView(viewModel: viewModel, apiPost: post)
                             } label: {
-                                Label(viewModel.isSaved(post) ? "Post salvo" : "Salvar post",
-                                      systemImage: viewModel.isSaved(post) ? "checkmark.circle.fill" : "bookmark")
-                                    .frame(maxWidth: .infinity)
+                                PostRowView(title: post.title, bodyText: post.body,
+                                            source: "Usuário \(post.userId) · Post #\(post.id)",
+                                            symbol: "person.crop.circle.fill")
                             }
-                            .buttonStyle(.bordered)
-                            .disabled(viewModel.isSaved(post))
+
+                            // A ação de salvar fica visível, sem precisar abrir o post.
+                            if viewModel.isSaved(post) {
+                                Label("Salvo", systemImage: "bookmark.fill")
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Button {
+                                    if !viewModel.savePost(post) { showingError = true }
+                                } label: {
+                                    Label("Salvar post", systemImage: "bookmark")
+                                        .font(.subheadline.weight(.semibold))
+                                        .padding(.vertical, 5)
+                                }
+                                .buttonStyle(.borderless)
+                            }
                         }
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 5)
+                    }
+                } header: {
+                    HStack {
+                        Text("Publicações")
+                        Spacer()
+                        Text("\(filteredPosts.count)")
+                            .monospacedDigit()
                     }
                 }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Explorar")
-            .searchable(text: $searchText, prompt: "Buscar posts da API")
+            .navigationBarTitleDisplayMode(.large)
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always),
+                        prompt: "Buscar publicações")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Button {
                         Task { await viewModel.fetchPosts() }
                     } label: {
                         Label("Atualizar", systemImage: "arrow.clockwise")
                     }
                     .disabled(viewModel.isLoading)
+
+                    Button {
+                        showingAddPost = true
+                    } label: {
+                        Label("Cadastrar novo post", systemImage: "square.and.pencil")
+                    }
                 }
             }
             .refreshable { await viewModel.fetchPosts() }
