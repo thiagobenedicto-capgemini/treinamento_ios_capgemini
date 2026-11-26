@@ -1,129 +1,107 @@
 import Foundation
 import SwiftUI
 
-// O ViewModel controla os dados e as ações das telas.
-// @MainActor garante que as mudanças da interface ocorram na thread principal.
+// O ViewModel reúne as ações da tela e os dados do aplicativo.
 @MainActor
 final class PostsViewModel: ObservableObject {
-    @Published var apiPosts: [APIPost] = []
-    @Published var savedPosts: [SavedPost] = []
-    @Published var isLoading = false
-    @Published var apiErrorMessage: String?
-    @Published var storageErrorMessage = ""
-    @Published var showStorageError = false
+    @Published private(set) var apiPosts: [APIPost] = []
+    @Published private(set) var savedPosts: [SavedPost] = []
+    @Published private(set) var isLoading = false
+    @Published private(set) var apiErrorMessage: String?
+    @Published private(set) var storageErrorMessage: String?
 
-    init() {
+    private let fileURL: URL
+    private var canWrite = true
+
+    init(fileURL: URL? = nil) {
+        let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        self.fileURL = fileURL ?? documents.appendingPathComponent("posts_salvos.json")
         loadSavedPosts()
     }
 
-    // GET: busca os posts da API pública.
+    // GET: consulta a API e transforma o JSON em uma lista de posts.
     func fetchPosts() async {
+        guard !isLoading else { return }
         isLoading = true
         apiErrorMessage = nil
         defer { isLoading = false }
 
         guard let url = URL(string: "https://jsonplaceholder.typicode.com/posts") else {
-            apiErrorMessage = "O endereço da API é inválido."
+            apiErrorMessage = "Endereço da API inválido."
             return
         }
 
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
-
-            // Verifica se o servidor respondeu com sucesso (HTTP 200 a 299).
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
                 apiErrorMessage = "A API retornou um erro. Tente novamente."
                 return
             }
-
             apiPosts = try JSONDecoder().decode([APIPost].self, from: data)
         } catch {
-            apiErrorMessage = "Não foi possível carregar os posts. Verifique sua internet."
+            if !Task.isCancelled {
+                apiErrorMessage = "Não foi possível carregar os posts. Verifique sua conexão."
+            }
         }
     }
 
-    // Verifica se um post da API já está na lista de salvos.
     func isSaved(_ post: APIPost) -> Bool {
         savedPosts.contains { $0.apiID == post.id }
     }
 
-    // Salva uma cópia do post da API no arquivo local.
-    func savePost(_ post: APIPost) {
-        guard !isSaved(post) else { return }
-
-        let newPost = SavedPost(
-            id: UUID(),
-            apiID: post.id,
-            title: post.title,
-            body: post.body
-        )
-
-        savedPosts.append(newPost)
-        saveToFile()
+    // Salva uma cópia local, sem alterar os dados do servidor.
+    @discardableResult
+    func savePost(_ post: APIPost) -> Bool {
+        guard !isSaved(post) else { return true }
+        let newPost = SavedPost(id: UUID(), apiID: post.id, title: post.title, body: post.body)
+        return saveToFile(savedPosts + [newPost])
     }
 
-    // Cadastra um post que foi digitado pelo usuário.
-    func addPost(title: String, body: String) {
+    @discardableResult
+    func addPost(title: String, body: String) -> Bool {
         let cleanTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let cleanBody = body.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !cleanTitle.isEmpty && !cleanBody.isEmpty else { return }
-
-        let newPost = SavedPost(
-            id: UUID(),
-            apiID: nil,
-            title: cleanTitle,
-            body: cleanBody
-        )
-
-        savedPosts.append(newPost)
-        saveToFile()
-    }
-
-    // Remove os itens selecionados com o gesto de deslizar na lista.
-    func deleteSavedPosts(at offsets: IndexSet) {
-        for index in offsets.sorted(by: >) {
-            savedPosts.remove(at: index)
+        guard !cleanTitle.isEmpty, !cleanBody.isEmpty else {
+            storageErrorMessage = "Preencha o título e o conteúdo."
+            return false
         }
-        saveToFile()
+        let newPost = SavedPost(id: UUID(), apiID: nil, title: cleanTitle, body: cleanBody)
+        return saveToFile(savedPosts + [newPost])
     }
 
-    // Caminho do arquivo JSON na pasta Documents do aplicativo.
-    private var fileURL: URL {
-        let documents = FileManager.default.urls(
-            for: .documentDirectory,
-            in: .userDomainMask
-        )[0]
-        return documents.appendingPathComponent("posts_salvos.json")
+    @discardableResult
+    func deletePost(_ post: SavedPost) -> Bool {
+        let updatedPosts = savedPosts.filter { $0.id != post.id }
+        return saveToFile(updatedPosts)
     }
 
-    // Lê os posts salvos quando o aplicativo é aberto.
     private func loadSavedPosts() {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return }
-
         do {
             let data = try Data(contentsOf: fileURL)
             savedPosts = try JSONDecoder().decode([SavedPost].self, from: data)
         } catch {
-            showFileError("Não foi possível ler o arquivo de posts salvos.")
+            // Evita sobrescrever um arquivo que não pôde ser lido.
+            canWrite = false
+            storageErrorMessage = "Não foi possível ler o arquivo de posts salvos. Os dados originais foram preservados."
         }
     }
 
-    // Grava os posts em um arquivo JSON. Não utiliza banco de dados.
-    private func saveToFile() {
+    // A lista só é atualizada se a gravação realmente funcionar.
+    private func saveToFile(_ posts: [SavedPost]) -> Bool {
+        guard canWrite else { return false }
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = .prettyPrinted
-            let data = try encoder.encode(savedPosts)
+            let data = try encoder.encode(posts)
             try data.write(to: fileURL, options: .atomic)
+            savedPosts = posts
+            storageErrorMessage = nil
+            return true
         } catch {
-            showFileError("Não foi possível gravar os posts no arquivo JSON.")
+            storageErrorMessage = "Não foi possível gravar o arquivo JSON. Nenhuma alteração foi salva."
+            return false
         }
-    }
-
-    private func showFileError(_ message: String) {
-        storageErrorMessage = message
-        showStorageError = true
     }
 }

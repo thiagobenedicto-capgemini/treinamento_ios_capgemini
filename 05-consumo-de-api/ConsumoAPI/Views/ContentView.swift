@@ -1,25 +1,26 @@
 import SwiftUI
 
 struct ContentView: View {
-    // Um único ViewModel é compartilhado pelas duas abas.
     @StateObject private var viewModel = PostsViewModel()
+    @State private var selectedTab = 0
+    @State private var showingAddPost = false
 
     var body: some View {
-        TabView {
-            ExploreView(viewModel: viewModel)
-                .tabItem {
-                    Label("Explorar", systemImage: "globe")
-                }
+        TabView(selection: $selectedTab) {
+            ExploreView(viewModel: viewModel, showingAddPost: $showingAddPost)
+                .tabItem { Label("Explorar", systemImage: "globe") }
+                .tag(0)
 
-            SavedView(viewModel: viewModel)
-                .tabItem {
-                    Label("Meus salvos", systemImage: "bookmark.fill")
-                }
+            SavedView(viewModel: viewModel, showingAddPost: $showingAddPost)
+                .tabItem { Label("Meus posts", systemImage: "bookmark.fill") }
+                .badge(viewModel.savedPosts.count)
+                .tag(1)
         }
-        .alert("Erro de armazenamento", isPresented: $viewModel.showStorageError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(viewModel.storageErrorMessage)
+        .tint(.indigo)
+        .sheet(isPresented: $showingAddPost) {
+            AddPostView(viewModel: viewModel) {
+                selectedTab = 1
+            }
         }
     }
 }

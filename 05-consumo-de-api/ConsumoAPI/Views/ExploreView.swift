@@ -2,93 +2,117 @@ import SwiftUI
 
 struct ExploreView: View {
     @ObservedObject var viewModel: PostsViewModel
+    @Binding var showingAddPost: Bool
+    @State private var searchText = ""
+    @State private var showingError = false
+
+    private var filteredPosts: [APIPost] {
+        if searchText.isEmpty { return viewModel.apiPosts }
+        return viewModel.apiPosts.filter {
+            $0.title.localizedCaseInsensitiveContains(searchText) ||
+            $0.body.localizedCaseInsensitiveContains(searchText)
+        }
+    }
 
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.isLoading && viewModel.apiPosts.isEmpty {
-                    ProgressView("Carregando posts...")
-                } else if viewModel.apiPosts.isEmpty {
-                    // Estado de erro ou de lista vazia.
-                    VStack(spacing: 16) {
-                        Image(systemName: "wifi.exclamationmark")
-                            .font(.largeTitle)
+            List {
+                Section {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("JSONPlaceholder · API REST", systemImage: "network")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.indigo)
+                        Text("Descubra novos posts")
+                            .font(.title2.bold())
+                        Text("Explore publicações da internet, salve suas favoritas ou escreva a sua própria.")
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
-
-                        Text(viewModel.apiErrorMessage ?? "Nenhum post encontrado.")
-                            .multilineTextAlignment(.center)
-
-                        Button("Tentar novamente") {
-                            Task { await viewModel.fetchPosts() }
+                        HStack(spacing: 8) {
+                            Label("\(viewModel.apiPosts.count) da API", systemImage: "globe")
+                            Spacer()
+                            Label("\(viewModel.savedPosts.count) salvos", systemImage: "bookmark.fill")
+                        }
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.indigo)
+                        .padding(.vertical, 4)
+                        Button {
+                            showingAddPost = true
+                        } label: {
+                            Label("Cadastrar novo post", systemImage: "plus.circle.fill")
+                                .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
                     }
-                    .padding()
-                } else {
-                    VStack(spacing: 0) {
-                        if let errorMessage = viewModel.apiErrorMessage {
-                            Text(errorMessage)
-                                .font(.footnote)
-                                .foregroundStyle(.red)
-                                .padding()
-                        }
+                    .padding(.vertical, 8)
+                }
 
-                        List(viewModel.apiPosts) { post in
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(post.title.capitalized)
-                                    .font(.headline)
-
-                                Text(post.body)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(3)
-
-                                HStack {
-                                    Text("Post #\(post.id)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-
-                                    Spacer()
-
-                                    Button {
-                                        viewModel.savePost(post)
-                                    } label: {
-                                        Label(
-                                            viewModel.isSaved(post) ? "Salvo" : "Salvar",
-                                            systemImage: viewModel.isSaved(post)
-                                                ? "bookmark.fill" : "bookmark"
-                                        )
-                                    }
-                                    .buttonStyle(.borderless)
-                                    .disabled(viewModel.isSaved(post))
-                                }
+                Section("Publicações da API") {
+                    if viewModel.isLoading && viewModel.apiPosts.isEmpty {
+                        ProgressView("Carregando posts…")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    } else if let error = viewModel.apiErrorMessage {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("Conexão indisponível", systemImage: "wifi.exclamationmark")
+                                .font(.headline)
+                            Text(error).font(.subheadline).foregroundStyle(.secondary)
+                            Button("Tentar novamente") {
+                                Task { await viewModel.fetchPosts() }
                             }
-                            .padding(.vertical, 4)
+                            .buttonStyle(.bordered)
                         }
-                        .listStyle(.plain)
-                        .refreshable {
-                            await viewModel.fetchPosts()
+                        .padding(.vertical, 8)
+                    } else if filteredPosts.isEmpty {
+                        Label("Nenhum post encontrado", systemImage: "magnifyingglass")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    ForEach(filteredPosts) { post in
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("Post #\(post.id)  ·  Usuário \(post.userId)", systemImage: "person.crop.circle")
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.secondary)
+                            Text(post.title).font(.headline)
+                            Text(post.body)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Button {
+                                if !viewModel.savePost(post) { showingError = true }
+                            } label: {
+                                Label(viewModel.isSaved(post) ? "Post salvo" : "Salvar post",
+                                      systemImage: viewModel.isSaved(post) ? "checkmark.circle.fill" : "bookmark")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(viewModel.isSaved(post))
                         }
+                        .padding(.vertical, 8)
                     }
                 }
             }
-            .navigationTitle("Explorar posts")
+            .listStyle(.insetGrouped)
+            .navigationTitle("Explorar")
+            .searchable(text: $searchText, prompt: "Buscar posts da API")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         Task { await viewModel.fetchPosts() }
                     } label: {
-                        Image(systemName: "arrow.clockwise")
+                        Label("Atualizar", systemImage: "arrow.clockwise")
                     }
                     .disabled(viewModel.isLoading)
-                    .accessibilityLabel("Atualizar posts")
                 }
             }
+            .refreshable { await viewModel.fetchPosts() }
             .task {
-                // Executa a requisição ao entrar na tela pela primeira vez.
-                if viewModel.apiPosts.isEmpty {
-                    await viewModel.fetchPosts()
-                }
+                if viewModel.apiPosts.isEmpty { await viewModel.fetchPosts() }
+            }
+            .alert("Não foi possível salvar", isPresented: $showingError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(viewModel.storageErrorMessage ?? "Tente novamente.")
             }
         }
     }
